@@ -1,0 +1,14 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jane-dev-admin
+  namespace: dev
+subjects:
+- kind: ServiceAccount
+  name: jane
+  namespace: dev
+roleRef:
+  kind: Role
+  name: dev-admin
+  apiGroup: rbac.authorization.k8s.io
