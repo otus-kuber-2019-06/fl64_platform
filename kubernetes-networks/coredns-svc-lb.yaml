@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coredns-lb-udp53
+  namespace: kube-system
+  annotations:
+    metallb.universe.tf/allow-shared-ip: coredns-lb
+spec:
+  selector:
+    k8s-app: kube-dns
+  type: LoadBalancer
+  ports:
+    - protocol: UDP
+      port: 53
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coredns-lb-tcp53
+  namespace: kube-system
+  annotations:
+    metallb.universe.tf/allow-shared-ip: coredns-lb
+spec:
+  selector:
+    k8s-app: kube-dns
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 53
+ьштш

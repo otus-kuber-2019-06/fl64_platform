@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: test1
+  name: web
+  labels:
+    app: test1
+spec:
+  initContainers:
+    - name: web-init
+      image: busybox:1.31.0
+      command: ['sh', '-c', 'wget -O- https://gist.githubusercontent.com/fl64/a06563d5b3e770350e6c02974cd8a5d2/raw/a27a47ee2559cb892cf325fb04ba003adfb5b40e/canary-test-1.sh | sh']
+      volumeMounts:
+      - name: app
+        mountPath: /app
+  containers:
+    - name: web
+      image: fl64/otus-k8s-nginx
+      volumeMounts:
+      - name: app
+        mountPath: /app
+  volumes:
+  - name: app
+    emptyDir: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: test2
+  name: web
+  labels:
+    app: test2
+spec:
+  initContainers:
+    - name: web-init
+      image: busybox:1.31.0
+      command: ['sh', '-c', 'wget -O- https://gist.githubusercontent.com/fl64/a06563d5b3e770350e6c02974cd8a5d2/raw/a27a47ee2559cb892cf325fb04ba003adfb5b40e/canary-test-2.sh | sh']
+      volumeMounts:
+      - name: app
+        mountPath: /app
+  containers:
+    - name: web
+      image: fl64/otus-k8s-nginx
+      volumeMounts:
+      - name: app
+        mountPath: /app
+  volumes:
+  - name: app
+    emptyDir: {}
