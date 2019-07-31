@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 100%
+  template:
+    metadata:
+      name: web
+      labels:
+        app: web
+    spec:
+      initContainers:
+        - name: web-init
+          image: busybox:1.31.0
+          command: ['sh', '-c', 'wget -O- https://raw.githubusercontent.com/express42/otus-platform-snippets/master/Module-02/Introduction-to-Kubernetes/wget.sh | sh']
+          volumeMounts:
+          - name: app
+            mountPath: /app
+      containers:
+        - name: web
+          image: fl64/otus-k8s-nginx
+          volumeMounts:
+          - name: app
+            mountPath: /app
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+      volumes:
+      - name: app
+        emptyDir: {}
