@@ -243,3 +243,46 @@ E0728 16:46:32.434479       8 controller.go:1258] cannot merge alternative backe
 - https://www.elvinefendi.com/2018/11/25/canary-deployment-with-ingress-nginx.html
 - https://medium.com/@domi.stoehr/canary-deployments-on-kubernetes-without-service-mesh-425b7e4cc862
 - https://github.com/stoehdoi/canary-demo?source=post_page---------------------------
+
+# HomeWork 4
+
+## В процессе сделано:
+ - Установлен kind, mc
+ - Запущен под с minio + PVC
+ - Предоставлен доступ к minio с использованием Service.
+## Задание со *
+- Учетные данные minio перенесены в secret и добавлены в манфест minio-secret.yaml
+## Как запустить проект:
+```bash
+## run kind
+kind create cluster
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+
+## go to folder
+cd kubernetes-volumes
+
+kubectl apply -f minio-statefulset.yaml
+
+kubectl get pvc
+kubectl get statefulsets
+kubectl get pods
+kubectl get pvc
+kubectl get pv
+
+# service
+kubectl apply -f minio-headless-service.yaml
+kubectl get svc
+
+# secrets
+
+echo -n 'username' | base64
+echo -n 'password' | base64
+```
+![](https://i.imgur.com/h2EtCYY.png)
+kubectl apply -f minio-secret.yaml 
+
+## Как проверить работоспособность:
+ - Например, перейти по ссылке http://localhost:8080
+
+## PR checklist:
+ - [ ] Выставлен label с номером домашнего задания
