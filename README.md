@@ -286,3 +286,79 @@ kubectl apply -f minio-secret.yaml
 
 ## PR checklist:
  - [ ] Выставлен label с номером домашнего задания
+
+
+# HomeWork 5
+
+## В процессе сделано:
+ - создана конфигурация кластера с поддержкой snapshots
+ - создан pod с pvc
+## Как запустить проект:
+```bash
+## run kind
+kind create cluster --config kubernetes-storage/cluster/cluster.yaml
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+
+## go to folder
+cd kubernetes-storage/hw
+
+kubectl apply -f 01-csi-storage-class.yml  
+kubectl apply -f 02-csi-pvc.yml  
+kubectl apply -f 03-csi-pod-with-pv.yml
+
+kubectl get pvc
+kubectl get pv
+```
+
+## Как проверить работоспособность:
+```bash
+kubectl exec storage-pod -- /bin/bash -c 'echo data > /data/data'
+kubectl exec storage-pod -- /bin/bash -c 'cat /data/data'
+
+### Create snapshot
+cat <<EOF | kubectl apply -f -
+apiVersion: snapshot.storage.k8s.io/v1alpha1
+kind: VolumeSnapshot
+metadata:
+  name: storage-pvc-snapshot
+spec:
+  snapshotClassName: csi-hostpath-snapclass
+  source:
+    name: storage-pvc
+    kind: PersistentVolumeClaim
+EOF
+
+### Cleanup
+kubectl delete pod storage-pod
+kubectl delete pvc storage-pvc
+
+### Restore PVC
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-pvc
+spec:
+  storageClassName: csi-hostpath-sc
+  dataSource:
+    name: storage-pvc-snapshot
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+EOF
+
+### Restore pod
+kubectl apply -f 03-csi-pod-with-pv.yml
+### Check
+kubectl exec storage-pod -- /bin/bash -c 'cat /data/data'
+
+
+
+```
+
+## PR checklist:
+ - [ ] Выставлен label с номером домашнего задания
