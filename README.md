@@ -435,3 +435,88 @@ kubectl describe netperf.app.example.com/example
 kubectl describe pod --selector=app=netperf-operator
 ```
 ![](https://i.imgur.com/9JQqVwi.png)
+
+# Homework 7
+
+ - [x] Основное ДЗ
+ - [ ] Задание со *
+
+## В процессе сделано:
+ - Создан CRD с MySQL
+ - Создан контроллер и запакован в docker образ
+
+## Как запустить
+#Создаем CRD + CR
+```
+kubectl apply -f ./deploy/crd.yml 
+kubectl apply -f ./deploy/cr.yml 
+```
+
+#Cмотрим результат
+```
+kubectl get crd
+kubectl get mysqls.otus.homework
+kubectl describe mysqls.otus.homework mysql-instance
+```
+
+#Собираем контейнер и пулим его в докерхаб
+```
+docker build . -t fl64/mysql-operator:v0.1
+docker pull fl64/mysql-operator:v0.1
+```
+
+#Применяем манифесты
+```
+kubectl apply -f ./deploy/service-account.yml
+kubectl apply -f ./deploy/ClusterRole.yml
+kubectl apply -f ./deploy/ClusterRoleBinding.yml
+kubectl apply -f ./deploy/deploy-operator.yml
+```
+
+## Как проверить
+
+#Заполняем данные
+```
+export MYSQLPOD=$(kubectl get pods -l app=mysql-instance -o jsonpath="{.items[*].metadata.name}")
+kubectl exec -it $MYSQLPOD -- mysql -u root -potuspassword -e "CREATE TABLE test ( id smallint unsigned not null auto_increment, name varchar(20) not null, constraint pk_example primary key (id) );" otus-database
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "INSERT INTO test ( id, name ) VALUES ( null, 'some data' );" otus-database
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "INSERT INTO test ( id, name ) VALUES ( null, 'some data-2' );" otus-database
+```
+
+#Проверяем
+```
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus-database
+```
+![](https://i.imgur.com/Ux2h0Mc.png)
+```
+kubectl delete mysqls.otus.homework mysql-instance
+
+kubectl get jobs
+```
+![](https://i.imgur.com/sCUg2lJ.png)
+
+```
+kubectl apply -f ./deploy/cr.yml 
+export MYSQLPOD=$(kubectl get pods -l app=mysql-instance -o jsonpath="{.items[*].metadata.name}")
+kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus-database
+
+kubectl get jobs
+```
+![](https://i.imgur.com/54AoPhF.png)
+![](https://i.imgur.com/IoNRwar.png)
+
+## Удаляемся
+
+#Для удаления используем:
+```
+kubectl delete mysqls.otus.homework mysql-instance
+```
+
+#Удаление данных после локальных тестов
+```
+kubectl delete mysqls.otus.homework mysql-instance
+kubectl delete deployments.apps mysql-instance
+kubectl delete pvc mysql-instance-pvc 
+kubectl delete pv mysql-instance-pv
+kubectl delete svc mysql-instance
+```
