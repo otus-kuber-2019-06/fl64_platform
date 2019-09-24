@@ -9,7 +9,7 @@ resource "google_compute_instance" "controllers" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1604-lts"
+      image = "ubuntu-os-cloud/ubuntu-1804-lts"
       size  = "200"
     }
   }

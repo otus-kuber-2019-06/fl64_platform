@@ -284,10 +284,6 @@ kubectl apply -f minio-secret.yaml
 ## Как проверить работоспособность:
  - Например, перейти по ссылке http://localhost:8080
 
-## PR checklist:
- - [ ] Выставлен label с номером домашнего задания
-
-
 # HomeWork 5
 
 ## В процессе сделано:
@@ -355,10 +351,87 @@ EOF
 kubectl apply -f 03-csi-pod-with-pv.yml
 ### Check
 kubectl exec storage-pod -- /bin/bash -c 'cat /data/data'
-
-
-
 ```
 
-## PR checklist:
- - [ ] Выставлен label с номером домашнего задания
+# HomeWork 6
+
+## В процессе сделано:
+ - Установлен kubectl debug plugin
+ - Решена проблема с запуском strace
+ - Установлен и настроен iptables-tailer
+
+
+## Процесс
+### Strace debug
+~/.kube/debug-conf
+```
+agentPort: 10027
+
+agentless: false
+agentPodNamespace: default
+agentPodNamePrefix: debug-agent-pod
+agentImage: aylei/debug-agent:latest
+
+debugAgentDaemonset: debug-agent
+debugAgentNamespace: kube-system
+portForward: true
+image: nicolaka/netshoot:latest
+command:
+- '/bin/bash'
+- '-l'
+```
+
+```bash
+#Установим под их первой домашки
+kubectl apply -f ../kubernetes-intro/web-pod.yaml 
+
+#Установим агента
+kubectl apply -f https://raw.githubusercontent.com/aylei/kubectl-debug/master/scripts/agent_daemonset.yml -n kube-system
+```
+
+В поде запускам `strace -c -p1`
+![](https://i.imgur.com/AGm1Arx.png)
+
+Изучение репы разработчика показывает, что в агенте нехватает "SYS_PTRACE", "SYS_ADMIN". Смотрим daemon-set по ссылке, но там версия 0.0.1. Меняем ее на latest. И запускаем.
+`kubectl apply -f strace/agent_daemonset.yml -n kube-system`
+![](https://i.imgur.com/twplnOr.png)
+
+### iptables-tailer
+
+```
+git clone https://github.com/piontec/netperf-operator
+kubectl apply -f ./deploy/crd.yaml
+kubectl apply -f ./deploy/rbac.yaml
+kubectl apply -f ./deploy/operator.yaml
+
+kubectl apply -f ./deploy/cr.yaml
+kubectl describe netperf.app.example.com/example
+```
+
+![](https://i.imgur.com/UGHrATN.png)
+Добавляем политику
+`kubectl apply -f https://raw.githubusercontent.com/express42/otus-platform-snippets/master/Module-03/Debugging/netperf-calico-policy.yaml`
+Цепляемся к ноде
+`gcloud compute ssh gke-standard-cluster-1-default-pool-72de6c40-b94j`
+Смотрим логи 
+`journalctl -k | grep calico`
+В логах беда, пакеты откидываются, ааа че делать то.
+![](https://i.imgur.com/HRsLZBR.png)
+Кароч, ставим **iptables-tailer**
+```
+kubectl apply -f ./kit/kit-clusterrole.yaml
+kubectl apply -f ./kit/kit-serviceaccount.yaml
+kubectl apply -f ./kit/kit-clusterrolebinding.yaml
+kubectl apply -f ./kit/netperf-calico-policy.yaml
+kubectl apply -f ./kit/iptables-tailer.yaml
+```
+
+Удаляем \ запускаем тесты
+```
+kubectl delete netperfs.app.example.com --all
+kubectl apply -f ./deploy/cr.yaml
+kubectl describe netperf.app.example.com/example
+
+kubectl describe pod --selector=app=netperf-operator
+```
+![](https://i.imgur.com/9JQqVwi.png)

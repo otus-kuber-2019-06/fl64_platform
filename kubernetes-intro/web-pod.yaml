@@ -28,7 +28,7 @@ spec:
       readinessProbe:
         httpGet:
           path: /index.html
-          port: 80
+          port: 8000
       livenessProbe:
         tcpSocket:
           port: 8000
