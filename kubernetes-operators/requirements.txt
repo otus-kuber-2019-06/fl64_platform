@@ -1,0 +1,5 @@
+kopf
+kubernetes
+jinja2
+pyyaml
+pykube-ng[gcp]
