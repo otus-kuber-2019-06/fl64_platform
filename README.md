@@ -521,6 +521,116 @@ kubectl delete pv mysql-instance-pv
 kubectl delete svc mysql-instance
 ```
 
+# HomeWork 10
+
+## В процессе сделано:
+ - Установка с ипользованием Helm2 + tiller
+ - Установка с ипользованием Helm2 + helm-tiller
+ - Helm3
+ - jsonnet
+ - kastomize
+
+
+
+## Процесс
+
+### Tiller
+```
+kubectl apply -f kubernetes-templating/cert-manager/01-tiller-rb.yml
+helm init --service-account=tiller
+helm version
+```
+
+### Ingress
+```
+helm upgrade --install nginx-ingress stable/nginx-ingress --wait --namespace=nginx-ingress --version=1.11.1
+```
+
+### Certmanager
+```
+kubectl apply -f kubernetes-templating/cert-manager/02-tiller-cert-manager-rb.yml
+helm init --tiller-namespace cert-manager --service-account tiller-cert-manager
+```
+
+### Add certmanager rpo
+
+```
+helm repo add jetstack https://charts.jetstack.io
+
+kubectl apply -f https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+kubectl label namespace cert-manager certmanager.k8s.io/disable-validation="true"
+
+helm upgrade --install cert-manager jetstack/cert-manager --wait --namespace=cert-manager --version=0.9.0 --tiller-namespace cert-manager
+-->> ERR
+#cleanup
+helm delete --purge cert-manager --tiller-namespace cert-manager
+#correct helm
+helm upgrade --install cert-manager jetstack/cert-manager --wait --namespace=cert-manager --version=0.9.0 --tiller-namespace cert-manager --atomic
+ERR
+
+```
+ user@default   ~/g/moe/f/kubernetes-templating     kubernetes-templating   1  helm upgrade --install cert-manager jetstack/cert-manager --wait --namespace=cert-manager --version=0.9.0 --tiller-namespace cert-manager --atomic
+Release "cert-manager" does not exist. Installing it now.
+INSTALL FAILED
+PURGING CHART
+Error: release cert-manager failed: clusterroles.rbac.authorization.k8s.io is forbidden: User "system:serviceaccount:cert-manager:tiller-cert-manager" cannot create resource "clusterroles" in API group "rbac.authorization.k8s.io" at the cluster scope
+Successfully purged a chart!
+Error: release cert-manager failed: clusterroles.rbac.authorization.k8s.io is forbidden: User "system:serviceaccount:cert-manager:tiller-cert-manager" cannot create resource "clusterroles" in API group "rbac.authorization.k8s.io" at the cluster scope
+```
+
+How to fix:
+https://docs.cert-manager.io/en/latest/reference/clusterissuers.html
+
+Инициализируем helm с сервисным аккаунтом tiller - helm init --service-account=tiller
+Деплоем cert-manager - helm upgrade --install cert-manager jetstack/cert-manager --wait --namespace=cert-manager --version=0.9.0 --atomic
+
+```
+
+### Cartmuseum
+
+```
+kubectl get service -n nginx-ingress
+
+helm plugin install https://github.com/rimusz/helm-tiller
+
+helm tiller run helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f chartmuseum/values.yml
+
+helm list
+helm tiller run helm list
+
+helm delete --purge chartmuseum   
+
+export HELM_TILLER_STORAGE=configmap
+
+helm upgrade --install chartmuseum stable/chartmuseum --wait --namespace=chartmuseum --version=2.3.2 -f kubernetes-templating/chartmuseum/values.yaml
+
+```
+
+### Harbor + helm3
+```
+helm3 upgrade --install harbor harbor/harbor --wait \
+--namespace=harbor \
+--version=1.1.2 \
+-f kubernetes-templating/harbor/values.yaml
+```
+
+### Socks shop
+```
+helm upgrade --install socks-shop kubernetes-templating/socks-shop --wait --atomic
+
+```
+
+### kubecfg
+```
+kubecfg show services.jsonnet
+kubecfg update services.jsonnet
+```
+
+### Kustomize
+```
+kubectl apply -k kubernetes-templating/kustomize/overlays/socks-shop-prod
+```
+
 # Homework 11
 
 ### Настрйока tiller
