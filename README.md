@@ -119,7 +119,7 @@ kubectl --namespace kube-system delete pod --selector='k8s-app=kube-proxy'
     - Выполнено задание со *. Настроен доступ на баллансировщик **coredns**.
 - Настроен для работы Nginx-Ingress контроллер
     - Частично выполнено задание со * по пробросу dashboard. Вроде все пробрасывается, но экран пустой, WTF.
-    - Выполнено задание по канареечному развертыванию с http заголовками. 
+    - Выполнено задание по канареечному развертыванию с http заголовками.
         - В процессе выполения канареечное разывертывание взлетело только с указанием имени конкретного хоста. Без него nginx-ingress ругался.
 ```
 E0728 16:46:32.434479       8 controller.go:1258] cannot merge alternative backend test2-test-svc-8000 into hostname  that does not exist
@@ -149,7 +149,7 @@ https://ealebed.github.io/posts/2018/%D0%B7%D0%BD%D0%B0%D0%BA%D0%BE%D0%BC%D1%81%
 
 ### Настройка сервисов
 ```bash
-kubectl apply -f web-svc-cip.yaml 
+kubectl apply -f web-svc-cip.yaml
 kubectl apply -f web-svc-lb.yaml
 kubectl get services
 ```
@@ -195,9 +195,9 @@ dig @172.17.255.1 web-svc-lb.default.svc.cluster.local +short
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/mandatory.yaml
 
-kubectl apply -f nginx-lb.yaml     
+kubectl apply -f nginx-lb.yaml
 kubectl apply -f web-svc-headless.yaml
-kubectl apply -f web-ingress.yaml 
+kubectl apply -f web-ingress.yaml
 
 kubectl get ingresses/web
 kubectl describe ingresses/web
@@ -205,7 +205,7 @@ kubectl describe ingresses/web
 
 **Проверка:**
 ```bash
-curl -k https://172.17.255.3/web 
+curl -k https://172.17.255.3/web
 ```
 ![](https://i.imgur.com/52EXbMK.png)
 
@@ -279,7 +279,7 @@ echo -n 'username' | base64
 echo -n 'password' | base64
 ```
 ![](https://i.imgur.com/h2EtCYY.png)
-kubectl apply -f minio-secret.yaml 
+kubectl apply -f minio-secret.yaml
 
 ## Как проверить работоспособность:
  - Например, перейти по ссылке http://localhost:8080
@@ -298,8 +298,8 @@ export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
 ## go to folder
 cd kubernetes-storage/hw
 
-kubectl apply -f 01-csi-storage-class.yml  
-kubectl apply -f 02-csi-pvc.yml  
+kubectl apply -f 01-csi-storage-class.yml
+kubectl apply -f 02-csi-pvc.yml
 kubectl apply -f 03-csi-pod-with-pv.yml
 
 kubectl get pvc
@@ -383,7 +383,7 @@ command:
 
 ```bash
 #Установим под их первой домашки
-kubectl apply -f ../kubernetes-intro/web-pod.yaml 
+kubectl apply -f ../kubernetes-intro/web-pod.yaml
 
 #Установим агента
 kubectl apply -f https://raw.githubusercontent.com/aylei/kubectl-debug/master/scripts/agent_daemonset.yml -n kube-system
@@ -413,7 +413,7 @@ kubectl describe netperf.app.example.com/example
 `kubectl apply -f https://raw.githubusercontent.com/express42/otus-platform-snippets/master/Module-03/Debugging/netperf-calico-policy.yaml`
 Цепляемся к ноде
 `gcloud compute ssh gke-standard-cluster-1-default-pool-72de6c40-b94j`
-Смотрим логи 
+Смотрим логи
 `journalctl -k | grep calico`
 В логах беда, пакеты откидываются, ааа че делать то.
 ![](https://i.imgur.com/HRsLZBR.png)
@@ -448,8 +448,8 @@ kubectl describe pod --selector=app=netperf-operator
 ## Как запустить
 #Создаем CRD + CR
 ```
-kubectl apply -f ./deploy/crd.yml 
-kubectl apply -f ./deploy/cr.yml 
+kubectl apply -f ./deploy/crd.yml
+kubectl apply -f ./deploy/cr.yml
 ```
 
 #Cмотрим результат
@@ -496,7 +496,7 @@ kubectl get jobs
 ![](https://i.imgur.com/sCUg2lJ.png)
 
 ```
-kubectl apply -f ./deploy/cr.yml 
+kubectl apply -f ./deploy/cr.yml
 export MYSQLPOD=$(kubectl get pods -l app=mysql-instance -o jsonpath="{.items[*].metadata.name}")
 kubectl exec -it $MYSQLPOD -- mysql -potuspassword -e "select * from test;" otus-database
 
@@ -516,7 +516,7 @@ kubectl delete mysqls.otus.homework mysql-instance
 ```
 kubectl delete mysqls.otus.homework mysql-instance
 kubectl delete deployments.apps mysql-instance
-kubectl delete pvc mysql-instance-pvc 
+kubectl delete pvc mysql-instance-pvc
 kubectl delete pv mysql-instance-pv
 kubectl delete svc mysql-instance
 ```
@@ -598,7 +598,7 @@ helm tiller run helm upgrade --install chartmuseum stable/chartmuseum --wait --n
 helm list
 helm tiller run helm list
 
-helm delete --purge chartmuseum   
+helm delete --purge chartmuseum
 
 export HELM_TILLER_STORAGE=configmap
 
@@ -635,8 +635,8 @@ kubectl apply -k kubernetes-templating/kustomize/overlays/socks-shop-prod
 
 ### Настрйока tiller
 ```bash
-kubectl apply -f tiller-sa.yml 
-helm init --service-account=tiller 
+kubectl apply -f tiller-sa.yml
+helm init --service-account=tiller
 ```
 ### Установка consul + Vault
 ```bash
@@ -753,7 +753,7 @@ vault  3/3    3m43s
 
 ==> v1beta1/PodDisruptionBudget
 NAME   MIN AVAILABLE  MAX UNAVAILABLE  ALLOWED DISRUPTIONS  AGE
-vault  N/A  
+vault  N/A
 ```
 
 ```bash
@@ -761,7 +761,7 @@ kubectl exec -it vault-0 --  vault login
 ```
 **output**
 ```
-Token (will be hidden): 
+Token (will be hidden):
 Success! You are now authenticated. The token information displayed below
 is already stored in the token helper. You do NOT need to run "vault login"
 again. Future Vault requests will automatically use this token.
@@ -960,8 +960,8 @@ kubectl exec -it vault-agent-example --container nginx-container sh
 ## CA
 Включимм УЦ
 ```bash
-kubectl exec -it vault-0 -- vault secrets enable pki 
-kubectl exec -it vault-0 -- vault secrets tune -max-lease-ttl=87600h pki 
+kubectl exec -it vault-0 -- vault secrets enable pki
+kubectl exec -it vault-0 -- vault secrets tune -max-lease-ttl=87600h pki
 kubectl exec -it vault-0 -- vault write -field=certificate pki/root/generate/internal common_name="exmaple.ru"  ttl=87600h > CA_cert.crt
 
 kubectl exec -it vault-0 -- vault write pki/config/urls issuing_certificates="http://vault:8200/v1/pki/ca" crl_distribution_points="http://vault:8200/v1/pki/crl"
@@ -1089,4 +1089,203 @@ Key                        Value
 ---                        -----
 revocation_time            1572868413
 revocation_time_rfc3339    2019-11-04T11:53:33.127582887Z
+```
+# Homework 24
+## Intro
+Используемые в процессе выполнения работ репозитории:
+- https://github.com/fl64/helm-charts-hw
+- https://github.com/fl64/reddit-flux
+
+
+## Prep
+
+```bash
+docker pull czm41k/post:0.1.1 && \
+docker pull czm41k/comment:0.1.1 && \
+docker pull czm41k/ui:0.2.3
+
+docker tag czm41k/post:0.1.1 fl64/post:0.1.1 && docker push fl64/post:0.1.1 && \
+docker tag czm41k/comment:0.1.1 fl64/comment:0.1.1 && docker push fl64/comment:0.1.1 && \
+docker tag czm41k/ui:0.2.3 fl64/ui:0.2.3 && docker push fl64/ui:0.2.3
+
+helm package charts/ui/
+helm package charts/post/
+helm package charts/comment/
+
+helm repo index . --url https://raw.githubusercontent.com/fl64/helm-charts-hw/master
+```
+
+
+## Tiller
+```bash
+kubectl -n kube-system create sa tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+helm init --skip-refresh --upgrade --service-account tiller --history-max 10
+```
+
+## HelmRelease CRD
+```bash
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/flux-helm-release-crd.yaml
+
+## Flux
+helm repo add fluxcd https://charts.fluxcd.io
+
+helm install --name flux \
+--set rbac.create=true \
+--set helmOperator.create=false \
+--set git.url=git@github.com:fl64/reddit-flux --namespace flux fluxcd/flux
+
+fluxctl identity --k8s-fwd-ns flux
+```
+
+```
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC132OQDsW0TTkTnz7yfhcoKR7z1UMtma0NrnuRK1k5tFg4X7ifO8Zbox3q8Ro/8w7LViY0OpM78HqdoWbT1ihYHwyRG8fXIMrrqHAMmlyyeSEanSbRiQHfr8gcQLoPidtLDcO8TSXHotP+eTd5TvUuJMOxYDuOfe6UM/QlSAXX2moBz8wJyPrdc4myC1Kgj6gPWQf9VM/RM3rVeDyVRGGuaumJL7StxvCd1tZxD1jV2o6Oq4KWiZgZepRcUGoTbemAqcK8df8o6pv/jSOX5BCxKeacpZrz2dQnAyJNMtG/+fOwugJFdrtpHBn42ONNevjZ57CMJjRCUO3PhZMyh6dr
+```
+
+```bash
+helm upgrade -i \
+helm-operator fluxcd/helm-operator --namespace flux \
+--set configureRepositories.enable=true \
+--set configureRepositories.repositories[0].name=stable \
+--set configureRepositories.repositories[0].url=https://kubernetes-charts.storage.googleapis.com \
+--set configureRepositories.repositories[1].name=helm-charts \
+--set configureRepositories.repositories[1].url=https://raw.githubusercontent.com/fl64/helm-charts-hw/master \
+  --set logReleaseDiffs=true \
+  --set git.ssh.secretName=flux-git-deploy
+
+kubectl get po -n flux
+![](https://i.imgur.com/KrUvRYj.png)
+
+## Check
+fluxctl --k8s-fwd-ns flux sync
+![](https://i.imgur.com/74OyTaF.png)
+
+## Update container version
+![](https://i.imgur.com/HqhXKrv.png)
+## Updated charts
+![](https://i.imgur.com/MoF9W7I.png)
+# Canary deployments withFlagger and IstioFlagger and Istio
+
+curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.3.3 sh -
+helm repo add istio.io https://storage.googleapis.com/istio-release/releases/1.3.3/charts/
+
+helm install install/kubernetes/helm/istio-init --name istio-init --namespace istio-system
+helm install install/kubernetes/helm/istio --name istio --namespace istio-system
+
+kubectl get pods -n istio-system
+
+helm repo add flagger https://flagger.app
+kubectl apply -fhttps://raw.githubusercontent.com/weaveworks/flagger/master/artifacts/flagger/crd.yaml
+helm upgrade -i flagger flagger/flagger \
+--namespace=istio-system \
+--set crd.create=false \
+--set meshProvider=istio \
+--set metricsServer=http://prometheus:9090
+
+kubectl apply -f istio/ui-vitrualservice.yaml -n istio-reddit
+kubectl apply -f istio/reddit-gw.yaml
+kubectl get gateway -n istio-reddit
+kubectl get svc istio-ingressgateway -n istio-system
+![](https://i.imgur.com/J8ryBNR.png)
+
+kubectl apply -f canary/ui-canary.yaml
+kubectl get canary -n istio-reddit
+![](https://i.imgur.com/MOv1w9v.png)
+kubectl describe canary ui -n istio-reddit
+kubectl get pods -n istio-reddit
+
+kubectl describe canaryui -n istio-reddit
+
+kubectl apply -f loadtest/
+
+kubectl describe canary ui -n istio-reddit
+```
+
+
+## Result
+```
+kubectl get canaries -nistio-reddit ui
+
+NAME   STATUS      WEIGHT   LASTTRANSITIONTIME
+ui     Succeeded   0        2019-11-25T17:25:40Z
+```
+![](https://i.imgur.com/u0BSJnp.png)
+```
+kubectl describe canary ui -n istio-reddit
+
+Name:         ui
+Namespace:    istio-reddit
+Labels:       fluxcd.io/sync-gc-mark=sha256.pGsW2-JM-AEtrlvkcVcbx_9HAlHQYAm3JPDrk9FLzmA
+Annotations:  fluxcd.io/sync-checksum: 4cfb059ea6af75c0d1ae2d9a9bf513dead3954ed
+              kubectl.kubernetes.io/last-applied-configuration:
+                {"apiVersion":"flagger.app/v1alpha3","kind":"Canary","metadata":{"annotations":{"fluxcd.io/sync-checksum":"4cfb059ea6af75c0d1ae2d9a9bf513d...
+API Version:  flagger.app/v1alpha3
+Kind:         Canary
+Metadata:
+  Creation Timestamp:  2019-11-24T15:43:09Z
+  Generation:          7
+  Resource Version:    680614
+  Self Link:           /apis/flagger.app/v1alpha3/namespaces/istio-reddit/canaries/ui
+  UID:                 1d77d36a-0ed1-11ea-afde-42010a8000a5
+Spec:
+  Canary Analysis:
+    Interval:    30s
+    Max Weight:  50
+    Metrics:
+      Interval:   30s
+      Name:       request-success-rate
+      Threshold:  99
+      Interval:   30s
+      Name:       request-duration
+      Threshold:  500
+    Step Weight:  5
+    Threshold:    10
+    Webhooks:
+      Metadata:
+        Cmd:                  hey -z 1m -q 10 -c 2 http://ui.istio-reddit.svc.cluster.local:9292/
+      Name:                   load-test
+      Timeout:                5s
+      URL:                    http://flagger-loadtester.istio-reddit.svc.cluster.local/
+  Progress Deadline Seconds:  60
+  Provider:                   istio
+  Service:
+    Port:  9292
+    Traffic Policy:
+      Tls:
+        Mode:  DISABLE
+  Target Ref:
+    API Version:  apps/v1
+    Kind:         Deployment
+    Name:         ui
+Status:
+  Canary Weight:  0
+  Conditions:
+    Last Transition Time:  2019-11-25T17:25:40Z
+    Last Update Time:      2019-11-25T17:25:40Z
+    Message:               Canary analysis completed successfully, promotion finished.
+    Reason:                Succeeded
+    Status:                True
+    Type:                  Promoted
+  Failed Checks:           1
+  Iterations:              0
+  Last Applied Spec:       9419793733479795271
+  Last Promoted Spec:      9419793733479795271
+  Last Transition Time:    2019-11-25T17:25:40Z
+  Phase:                   Succeeded
+  Tracked Configs:
+Events:
+  Type     Reason  Age                   From     Message
+  ----     ------  ----                  ----     -------
+  Normal   Synced  8m40s (x7 over 25h)   flagger  New revision detected! Scaling up ui.istio-reddit
+  Normal   Synced  8m11s (x10 over 25h)  flagger  Starting canary analysis for ui.istio-reddit
+  Normal   Synced  8m11s (x10 over 25h)  flagger  Advance ui.istio-reddit canary weight 5
+  Warning  Synced  7m39s (x32 over 25h)  flagger  Halt advancement no values found for metric request-success-rate probably ui.istio-reddit is not receiving traffic
+  Normal   Synced  7m10s                 flagger  Advance ui.istio-reddit canary weight 10
+  Normal   Synced  6m40s                 flagger  Advance ui.istio-reddit canary weight 15
+  Normal   Synced  6m10s                 flagger  Advance ui.istio-reddit canary weight 20
+  Normal   Synced  5m41s                 flagger  Advance ui.istio-reddit canary weight 25
+  Normal   Synced  5m10s                 flagger  Advance ui.istio-reddit canary weight 30
+  Normal   Synced  4m40s                 flagger  Advance ui.istio-reddit canary weight 35
+  Normal   Synced  101s (x6 over 4m10s)  flagger  (combined from similar events): Promotion completed! Scaling down ui.istio-reddit
+
 ```
